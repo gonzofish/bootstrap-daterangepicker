@@ -29,6 +29,7 @@
     }
 }(this, function(moment, $) {
     var DateRangePicker = function(element, options, cb) {
+        var moveMonth;
 
         //default settings for options
         this.parentEl = 'body';
@@ -84,6 +85,7 @@
         this.isShowing = false;
         this.leftCalendar = {};
         this.rightCalendar = {};
+        moveMonth = false;
 
         //custom options from user
         if (typeof options !== 'object' || options === null)
@@ -332,7 +334,7 @@
 
                 // If the end of the range is before the minimum or the start of the range is
                 // after the maximum, don't display this range option at all.
-                if ((this.minDate && end.isBefore(this.minDate, this.timepicker ? 'minute' : 'day')) 
+                if ((this.minDate && end.isBefore(this.minDate, this.timepicker ? 'minute' : 'day'))
                   || (maxDate && start.isAfter(maxDate, this.timepicker ? 'minute' : 'day')))
                     continue;
 
@@ -414,11 +416,17 @@
 
         this.container.find('.calendar')
             .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
+            .on('mousedown.daterangepicker', '.prev', $.proxy(this.startMonthMove, this))
+            .on('mouseup.daterangepicker', '.prev', $.proxy(this.endMonthMove, this))
             .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
+            .on('mousedown.daterangepicker', '.next', $.proxy(this.startMonthMove, this))
+            .on('mouseup.daterangepicker', '.next', $.proxy(this.endMonthMove, this))
             .on('mousedown.daterangepicker', 'td.available', $.proxy(this.clickDate, this))
             .on('mouseenter.daterangepicker', 'td.available', $.proxy(this.hoverDate, this))
             .on('mouseleave.daterangepicker', 'td.available', $.proxy(this.updateFormInputs, this))
             .on('change.daterangepicker', 'select.yearselect', $.proxy(this.monthOrYearChanged, this))
+            .on('mousedown.daterangepicker', 'select', $.proxy(this.startMonthMove, this))
+            .on('mouseup.daterangepicker', 'select', $.proxy(this.endMonthMove, this))
             .on('change.daterangepicker', 'select.monthselect', $.proxy(this.monthOrYearChanged, this))
             .on('change.daterangepicker', 'select.hourselect,select.minuteselect,select.secondselect,select.ampmselect', $.proxy(this.timeChanged, this))
             .on('click.daterangepicker', '.daterangepicker_input input', $.proxy(this.showCalendars, this))
@@ -1248,6 +1256,14 @@
             this.updateCalendars();
         },
 
+        startMonthMove: function() {
+            moveMonth = true;
+        },
+
+        endMonthMove: function() {
+            moveMonth = false;
+        },
+
         hoverDate: function(e) {
 
             //ignore mouse movements while an above-calendar text input has focus
@@ -1534,7 +1550,7 @@
             this.container.find('input[name="daterangepicker_start"], input[name="daterangepicker_end"]').removeClass('active');
             $(e.target).addClass('active');
 
-            // Set the state such that if the user goes back to using a mouse, 
+            // Set the state such that if the user goes back to using a mouse,
             // the calendars are aware we're selecting the end of the range, not
             // the start. This allows someone to edit the end of a date range without
             // re-selecting the beginning, by clicking on the end date input then
@@ -1555,7 +1571,7 @@
             // you can click another, but if you tab out without clicking anything
             // or changing the input value, the old endDate should be retained
 
-            if (!this.endDate) {
+            if (!moveMonth && !this.endDate) {
                 var val = this.container.find('input[name="daterangepicker_end"]').val();
                 var end = moment(val, this.locale.format);
                 if (end.isValid()) {
@@ -1573,7 +1589,7 @@
             // Other browsers and versions of IE are untested and the behaviour is unknown.
             if (e.keyCode === 13) {
                 // Prevent the calendar from being updated twice on Chrome/Firefox/Edge
-                e.preventDefault(); 
+                e.preventDefault();
                 this.formInputsChanged(e);
             }
         },
