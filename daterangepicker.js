@@ -29,8 +29,6 @@
     }
 }(this, function(moment, $) {
     var DateRangePicker = function(element, options, cb) {
-        var moveMonth;
-
         //default settings for options
         this.parentEl = 'body';
         this.element = $(element);
@@ -85,7 +83,7 @@
         this.isShowing = false;
         this.leftCalendar = {};
         this.rightCalendar = {};
-        moveMonth = false;
+        this.moveMonth = false;
 
         //custom options from user
         if (typeof options !== 'object' || options === null)
@@ -1257,11 +1255,11 @@
         },
 
         startMonthMove: function() {
-            moveMonth = true;
+            this.moveMonth = true;
         },
 
         endMonthMove: function() {
-            moveMonth = false;
+            this.moveMonth = false;
         },
 
         hoverDate: function(e) {
@@ -1571,7 +1569,7 @@
             // you can click another, but if you tab out without clicking anything
             // or changing the input value, the old endDate should be retained
 
-            if (!moveMonth && !this.endDate) {
+            if (!this.moveMonth && !this.endDate) {
                 var val = this.container.find('input[name="daterangepicker_end"]').val();
                 var end = moment(val, this.locale.format);
                 if (end.isValid()) {
