@@ -1069,7 +1069,7 @@
 
         },
 
-        checkIgnoreMouse(forceUpdate) {
+        checkIgnoreMouse: function(forceUpdate) {
             return !forceUpdate && (
                 this.container.find('input[name=daterangepicker_start]').is(":focus") ||
                 this.container.find('input[name=daterangepicker_end]').is(":focus")
