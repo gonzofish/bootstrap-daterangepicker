@@ -252,6 +252,12 @@ $daterangepicker-ranges-active-border-radius: $daterangepicker-border-radius !de
     }
   }
 
+  .calendars .calendar {
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
+    margin-top: 0;
+    padding-top: 4px;
+  }
+
   .calendar-table {
     border: $daterangepicker-calendar-border-size solid $daterangepicker-calendar-border-color;
     padding: $daterangepicker-calendar-margin;
@@ -379,7 +385,6 @@ $daterangepicker-ranges-active-border-radius: $daterangepicker-border-radius !de
     height: $daterangepicker-control-line-height;
     line-height: $daterangepicker-control-height;
     display: block;
-    vertical-align: middle;
 
     // TODO: Should these all be static, too??
     margin: 0 0 5px 0;
@@ -387,6 +392,7 @@ $daterangepicker-ranges-active-border-radius: $daterangepicker-border-radius !de
     width: 100%;
 
     &.active {
+      background-color: $daterangepicker-in-range-bg-color;
       border: $daterangepicker-control-active-border-size solid $daterangepicker-control-active-border-color;
       border-radius: $daterangepicker-control-active-border-radius;
     }
