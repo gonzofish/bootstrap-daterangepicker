@@ -37,6 +37,8 @@
         this.minDate = false;
         this.maxDate = false;
         this.dateLimit = false;
+        // change: minRange
+        this.minRange = false;
         this.autoApply = false;
         this.singleDatePicker = false;
         this.showDropdowns = false;
@@ -223,6 +225,11 @@
         if (typeof options.dateLimit === 'object')
             this.dateLimit = options.dateLimit;
 
+        // change: minRange
+        if (typeof options.minRange === 'object') {
+            this.minRange = options.minRange;
+        }
+
         if (typeof options.opens === 'string')
             this.opens = options.opens;
 
@@ -337,6 +344,9 @@
                 var maxDate = this.maxDate;
                 if (this.dateLimit && maxDate && start.clone().add(this.dateLimit).isAfter(maxDate))
                     maxDate = start.clone().add(this.dateLimit);
+                // change: minRange
+                if (this.minRange && minDate && end.clone().subtract(this.minRange).isBefore(minDate))
+                    minDate = end.clone().subtract(this.minRange);
                 if (maxDate && end.isAfter(maxDate))
                     end = maxDate.clone();
 
@@ -407,6 +417,10 @@
         //swap the position of the predefined ranges if opens right
         if (typeof options.ranges !== 'undefined' && this.opens == 'right') {
             this.container.find('.ranges').prependTo( this.container.find('.calendar.left').parent() );
+        }
+
+        if (this.startDate && this.endDate && this.minRange && this.endDate.clone().subtract(this.minRange).isBefore(this.startDate)) {
+            this.setStartDate(this.endDate.clone().subtract(this.minRange));
         }
 
         //apply CSS classes and labels to buttons
@@ -531,6 +545,11 @@
 
             if (this.dateLimit && this.startDate.clone().add(this.dateLimit).isBefore(this.endDate))
                 this.endDate = this.startDate.clone().add(this.dateLimit);
+
+            // minRange change
+            if (this.minRange && this.endDate.clone().subtract(this.minRange).isBefore(this.startDate)) {
+                this.startDate = this.endDate.clone().subtract(this.minRange).startOf('day');
+            }
 
             this.previousRightTime = this.endDate.clone();
 
@@ -810,6 +829,14 @@
                 }
             }
 
+            // change: minRange
+            if (this.startDate === null && this.minRange) {
+                var minLimit = this.endDate.clone().subtract(this.minRange).endOf('day');
+                if (!minDate || minLimit.isAfter(minDate)) {
+                    minDate = minLimit;
+                }
+            }
+
             for (var row = 0; row < 6; row++) {
                 html += '<tr>';
 
@@ -900,6 +927,11 @@
 
             if (this.dateLimit && (!this.maxDate || this.startDate.clone().add(this.dateLimit).isAfter(this.maxDate)))
                 maxDate = this.startDate.clone().add(this.dateLimit);
+
+            // change: minRange
+            if (this.minRange && (!this.minDate || this.endDate.clone().subtract(this.minRange).isBefore(this.minDate))) {
+                minDate = this.endDate.clone().subtract(this.minRange);
+            }
 
             if (side == 'left') {
                 selected = this.startDate.clone();
